@@ -9,4 +9,4 @@ def filter_datum(
         ) -> str:
     ''' filter datum '''
     pattern = f"({'|'.join(fields)})=([^{separator}]+)"
-    return re.sub(pattern,r"\1=" + redaction, message)
+    return re.sub(pattern, r"\1=" + redaction, message)
