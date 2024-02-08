@@ -8,7 +8,5 @@ def filter_datum(
         fields: List[str], redaction: str, message: str, separator: str
         ) -> str:
     ''' filter datum '''
-    for field in fields:
-        message = re.sub(f'(?<={field}=)[^;]+', redaction, message)
-    message = message.replace(';', separator)
-    return message
+    pattern = f"({'|'.join(fields)})=([^{separator}]+)"
+    return re.sub(pattern,r"\1=" + redaction, message)
