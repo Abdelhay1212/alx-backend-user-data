@@ -5,6 +5,7 @@ import os
 import logging
 import mysql.connector
 from typing import List
+from mysql.connector import Error
 
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
@@ -38,12 +39,15 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     config = {
         'host': os.environ.get('PERSONAL_DATA_DB_HOST', 'localhost'),
         'user': os.environ.get('PERSONAL_DATA_DB_USERNAME', 'root'),
-        'password': os.environ.get('PERSONAL_DATA_DB_PASSWORD', ''),
+        'passwd': os.environ.get('PERSONAL_DATA_DB_PASSWORD', ''),
         'database': os.environ['PERSONAL_DATA_DB_NAME']
     }
-    connection = mysql.connector.connection(**config)
-
-    return connection.cursor()
+    try:
+        connection = mysql.connector.connect(**config)
+        return connection
+    except Error as e:
+        print(e)
+        return None
 
 
 class RedactingFormatter(logging.Formatter):
