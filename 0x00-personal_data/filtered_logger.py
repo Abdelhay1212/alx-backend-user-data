@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 ''' Regex-ing '''
 import re
+import os
 import logging
+import mysql.connector
 from typing import List
 
 
@@ -10,7 +12,7 @@ PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 def filter_datum(
         fields: List[str], redaction: str, message: str, separator: str
-        ) -> str:
+) -> str:
     ''' filter datum '''
     pattern = f"({'|'.join(fields)})=([^{separator}]+)"
     return re.sub(pattern, r"\1=" + redaction, message)
@@ -29,6 +31,20 @@ def get_logger() -> logging.Logger:
 
     logger.addHandler(stream_handler)
     return logger
+
+
+def get_db():
+    ''' returns a connector to the database '''
+    config = {
+        'host': os.environ.get('PERSONAL_DATA_DB_HOST', 'localhost'),
+        'user': os.environ.get('PERSONAL_DATA_DB_USERNAME', 'root'),
+        'password': os.environ.get('PERSONAL_DATA_DB_PASSWORD', ''),
+        'database': os.environ['PERSONAL_DATA_DB_NAME']
+    }
+
+    connection = mysql.connector.connection(**config)
+
+    return connection
 
 
 class RedactingFormatter(logging.Formatter):
