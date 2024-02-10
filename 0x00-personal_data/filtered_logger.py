@@ -34,6 +34,20 @@ def get_logger() -> logging.Logger:
     return logger
 
 
+def main() -> None:
+    ''' Read and filter data '''
+
+    query = "SELECT name, email, phone, ssn, password, ip, last_login, user_agent FROM users;"
+
+    logger = get_logger()
+    connection = get_db()
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        print(rows)
+
+
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class
         """
@@ -67,19 +81,6 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     except Error as e:
         print(e)
         return None
-
-
-def main() -> None:
-    ''' Read and filter data '''
-
-    query = "SELECT name, email, phone, ssn, password, ip, last_login, user_agent FROM users;"
-
-    logger = get_logger()
-    connection = get_db()
-
-    with connection.cursor() as cursor:
-        cursor.execute(query)
-        rows = cursor.fetchall()
 
 
 if __name__ == '__main__':
