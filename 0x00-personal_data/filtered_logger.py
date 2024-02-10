@@ -5,7 +5,6 @@ import os
 import logging
 import mysql.connector
 from typing import List
-from mysql.connector import Error
 
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
@@ -34,20 +33,6 @@ def get_logger() -> logging.Logger:
     return logger
 
 
-def main() -> None:
-    ''' Read and filter data '''
-
-    query = "SELECT name, email, phone, ssn, password, ip, last_login, user_agent FROM users;"
-
-    logger = get_logger()
-    connection = get_db()
-
-    with connection.cursor() as cursor:
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        print(rows)
-
-
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class
         """
@@ -68,19 +53,29 @@ class RedactingFormatter(logging.Formatter):
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
     ''' returns a connector to the database '''
-    config = {
-        'port': 3306,
-        'host': os.environ.get('PERSONAL_DATA_DB_HOST', 'localhost'),
-        'user': os.environ.get('PERSONAL_DATA_DB_USERNAME', 'root'),
-        'passwd': os.environ.get('PERSONAL_DATA_DB_PASSWORD', ''),
-        'database': os.environ.get('PERSONAL_DATA_DB_NAME', '')
-    }
-    try:
-        connection = mysql.connector.connect(**config)
-        return connection
-    except Error as e:
-        print(e)
-        return None
+
+    username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    db_name = os.getenv("PERSONAL_DATA_DB_NAME")
+
+    return mysql.connector.connect(
+        user=username, password=password, host=host, database=db_name
+    )
+
+
+def main() -> None:
+    ''' Read and filter data '''
+
+    query = "SELECT name, email, phone, ssn, password, ip, last_login, user_agent FROM users;"
+
+    logger = get_logger()
+    connection = get_db()
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        print(rows)
 
 
 if __name__ == '__main__':
