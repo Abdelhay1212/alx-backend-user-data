@@ -57,7 +57,7 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
     password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
     host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
-    db_name = os.getenv("PERSONAL_DATA_DB_NAME")
+    db_name = os.getenv("PERSONAL_DATA_DB_NAME", "")
 
     return mysql.connector.connect(
         user=username, password=password, host=host, database=db_name
@@ -66,16 +66,14 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
 
 def main() -> None:
     ''' Read and filter data '''
+    pass
+    # logger = get_logger()
+    # connection = get_db()
+    # query = "SELECT * FROM users;"
 
-    query = "SELECT name, email, phone, ssn, password, ip, last_login, user_agent FROM users;"
-
-    logger = get_logger()
-    connection = get_db()
-
-    with connection.cursor() as cursor:
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        print(rows)
+    # with connection.cursor() as cursor:
+    #     cursor.execute(query)
+    #     rows = cursor.fetchall()
 
 
 if __name__ == '__main__':
