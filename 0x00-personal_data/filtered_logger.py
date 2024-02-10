@@ -43,7 +43,7 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     }
     connection = mysql.connector.connection(**config)
 
-    return connection
+    return connection.cursor()
 
 
 class RedactingFormatter(logging.Formatter):
