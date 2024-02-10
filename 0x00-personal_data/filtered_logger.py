@@ -40,7 +40,8 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
         'host': os.environ.get('PERSONAL_DATA_DB_HOST', 'localhost'),
         'user': os.environ.get('PERSONAL_DATA_DB_USERNAME', 'root'),
         'passwd': os.environ.get('PERSONAL_DATA_DB_PASSWORD', ''),
-        'database': os.environ['PERSONAL_DATA_DB_NAME']
+        'database': os.environ.get('PERSONAL_DATA_DB_NAME', ''),
+        'port': 3306
     }
     try:
         connection = mysql.connector.connect(**config)
