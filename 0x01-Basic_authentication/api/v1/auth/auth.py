@@ -19,6 +19,9 @@ class Auth:
         path_no_slash = path
 
         for path in excluded_paths:
+            if path.endswith('*'):
+                if path_no_slash.startswith(path[:-1]):
+                    return False
             if path.endswith('/'):
                 if path_no_slash == path[:-1]:
                     return False
