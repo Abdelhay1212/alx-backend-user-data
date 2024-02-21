@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """DB module
 """
+from typing import Union
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.orm.exc import NoResultFound
 
 from user import Base, User
 
@@ -31,7 +34,7 @@ class DB:
         return self.__session
 
     def add_user(self, email: str, hashed_password: str) -> User:
-        """add user
+        """add new user to the database
         """
         try:
             new_user = User(email=email, hashed_password=hashed_password)
@@ -41,3 +44,15 @@ class DB:
             self._session.rollback()
             new_user = None
         return new_user
+
+    def find_user_by(self, **kwargs) -> User:
+        """find a user in table of users and return it
+        """
+        for key in kwargs:
+            if not hasattr(User, key):
+                raise InvalidRequestError
+
+        user = self._session.query(User).filter_by(**kwargs).first()
+        if not user:
+            raise NoResultFound
+        return user
