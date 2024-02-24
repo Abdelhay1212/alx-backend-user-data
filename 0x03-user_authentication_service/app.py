@@ -37,16 +37,16 @@ def users():
 
 @app.route('/sessions', methods=['POST'], strict_slashes=False)
 def login():
-    """log in
+    """log in a user
     """
     email = request.get_data('email')
     password = request.get_data('password')
 
     if AUTH.valid_login(email=email, password=password):
         session_id = AUTH.create_session(email=email)
-        resp = {"email": email, "message": "logged in"}
+        resp = jsonify({"email": email, "message": "logged in"})
         resp.set_cookie("session_id", session_id)
-        return jsonify(resp)
+        return resp
     abort(401)
 
 
