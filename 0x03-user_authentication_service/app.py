@@ -20,14 +20,14 @@ def root():
 def users():
     """register a user if doesn't exist
     """
-    email = request.get_data("email")
-    password = request.get_data("password")
+    email = request.form.get("email")
+    password = request.form.get("password")
 
     try:
         AUTH.register_user(email, password)
         return jsonify(
             {
-                "email": "<registered email>",
+                "email": email,
                 "message": "user created"
             }
         )
@@ -39,8 +39,8 @@ def users():
 def login():
     """log in a user
     """
-    email = request.get_data('email')
-    password = request.get_data('password')
+    email = request.form.get('email')
+    password = request.form.get('password')
 
     if AUTH.valid_login(email=email, password=password):
         session_id = AUTH.create_session(email=email)
