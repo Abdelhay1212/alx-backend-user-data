@@ -2,7 +2,7 @@
 """Basic Flask app
 """
 from auth import Auth
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify, abort, redirect, url_for
 
 
 AUTH = Auth()
@@ -35,19 +35,29 @@ def users():
         return jsonify({"message": "email already registered"})
 
 
-@app.route('/sessions', methods=['POST'], strict_slashes=False)
-def login():
+@app.route('/sessions', methods=['POST', 'DELETE'], strict_slashes=False)
+def handle_sessions():
     """log in a user
     """
-    email = request.form.get('email')
-    password = request.form.get('password')
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-    if AUTH.valid_login(email=email, password=password):
-        session_id = AUTH.create_session(email=email)
-        resp = jsonify({"email": email, "message": "logged in"})
-        resp.set_cookie("session_id", session_id)
-        return resp
-    abort(401)
+        if AUTH.valid_login(email=email, password=password):
+            session_id = AUTH.create_session(email=email)
+            resp = jsonify({"email": email, "message": "logged in"})
+            resp.set_cookie("session_id", session_id)
+            return resp
+        abort(401)
+
+    if request.method == 'DELETE':
+        session_id = request.cookies.get('session_id')
+        user = AUTH.get_user_from_session_id(session_id)
+        if user is not None:
+            AUTH.destroy_session(user_id=user.id)
+            return redirect(url_for('/'))
+        else:
+            abort(403)
 
 
 if __name__ == "__main__":
