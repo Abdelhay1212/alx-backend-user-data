@@ -32,7 +32,7 @@ def users():
             }
         )
     except ValueError:
-        return jsonify({"message": "email already registered"})
+        return jsonify({"message": "email already registered"}), 400
 
 
 @app.route('/sessions', methods=['POST', 'DELETE'], strict_slashes=False)
@@ -47,8 +47,9 @@ def handle_sessions():
             session_id = AUTH.create_session(email=email)
             resp = jsonify({"email": email, "message": "logged in"})
             resp.set_cookie("session_id", session_id)
-            return resp
-        abort(401)
+            return resp, 200
+        else:
+            abort(401)
 
     if request.method == 'DELETE':
         session_id = request.cookies.get('session_id')

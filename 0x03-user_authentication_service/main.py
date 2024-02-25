@@ -84,7 +84,7 @@ def reset_password_token(email: str) -> str:
     response = requests.post(URL+'/reset_password', data=data)
     assert response.status_code == 200
     assert 'email' in response.json()
-    assert response.json()[email] == email
+    assert response.json().get('email') == email
     assert 'reset_token' in response.json()
     return response.json().get('reset_token')
 
